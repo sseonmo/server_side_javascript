@@ -1,0 +1,28 @@
+- NPM : Node Package Manager
+
+- url module
+let url 	= require('url');
+let queryData = url.parse(_url, true).query;	//querystring 추출
+
+
+
+pm2 : production process manager
+설치 - npm install -p pm2
+
+ 실행 - pm2 start main.js(프로그램명) --watch(실시간반영)
+ 종료 - pm2 stop main.js(프로그램명)
+ 모니터링 - pm2 monit
+ 로그확인 - pm2 log
+
+
+sanitize-html : xss filter 같음
+  설치 - npm install -S(현재 프로젝트에만 적용) sanitize-html
+
+uglify-js : source소스 최소화
+  설치 - npm install uglify-js -g
+  실행 - uglifyjs pretty.js(파일명) -m(mangle : 지역변수와 같이 변수명이 변경되도 상관없는 것들 변수명을 최소한의 변수명으로 변경한다.)
+         uglifyjs pretty.js -o(다른파일로 저장) pretty.min.js(다른파일명) -m
+
+
+underscore :
+  설치 - npm install underscore
