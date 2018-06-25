@@ -4,7 +4,8 @@
 let url 	= require('url');
 let queryData = url.parse(_url, true).query;	//querystring 추출
 
-
+- version 확인 : console.log(process.versions);
+               : node -p process.versions.v8
 
 pm2 : production process manager
 설치 - npm install -p pm2
@@ -23,6 +24,11 @@ uglify-js : source소스 최소화
   실행 - uglifyjs pretty.js(파일명) -m(mangle : 지역변수와 같이 변수명이 변경되도 상관없는 것들 변수명을 최소한의 변수명으로 변경한다.)
          uglifyjs pretty.js -o(다른파일로 저장) pretty.min.js(다른파일명) -m
 
-
-underscore :
+underscore : array, object을 좀더 사용하기 쉽게 제공하는 js
   설치 - npm install underscore
+
+Express : server module
+  설치 - npm install -save express
+
+pug : template engine
+  설치 - npm install pug --save
