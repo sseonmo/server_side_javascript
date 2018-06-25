@@ -1,5 +1,7 @@
 - NPM : Node Package Manager
 
+- semantic url : path로 params를 받는 방식
+
 - url module
 let url 	= require('url');
 let queryData = url.parse(_url, true).query;	//querystring 추출
@@ -32,3 +34,6 @@ Express : server module
 
 pug : template engine
   설치 - npm install pug --save
+
+bodyparser - post로 받는 parameter를 파싱해준다.
+  설치 - npm install  body-parser --save

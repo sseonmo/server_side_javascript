@@ -1,4 +1,5 @@
 let express = require('express');
+let bodyParser = require('body-parser');
 let app = express();
 
 app.locals.pretty = true;
@@ -6,6 +7,24 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 app.use(express.static('public'));	//정적파일 디렉토리 위치지정
 
+// parse application/x-www-form-urlencoded
+ app.use(bodyParser.urlencoded({ extended: false }));
+// create application/x-www-form-urlencoded parser
+// let urlencodedParser = bodyParser.urlencoded({ extended: false });	// content-Type 를 여러개 받을때 변수를 사용할면 될것 같음
+
+
+app.get('/form', (req, res) => {
+	res.render('form')
+});
+
+app.post('/form_reciver', (req, res) => {
+
+	console.log(bodyParser(req.body));
+	let title = req.body.title;
+	let desc = req.body.description;
+
+	res.send(title+'@@'+desc);
+});
 
 // semantic url 방식
 app.get('/topic/:id', (req, res) => {
