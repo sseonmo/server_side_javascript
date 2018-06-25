@@ -1,5 +1,6 @@
 let express = require('express');
 let bodyParser = require('body-parser');
+
 let app = express();
 
 app.locals.pretty = true;
@@ -19,7 +20,6 @@ app.get('/form', (req, res) => {
 
 app.post('/form_reciver', (req, res) => {
 
-	console.log(bodyParser(req.body));
 	let title = req.body.title;
 	let desc = req.body.description;
 
