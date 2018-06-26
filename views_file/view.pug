@@ -12,10 +12,7 @@ html
 				li
 					a(href=`/topic/${val}`)= val
 		artcle
-			form(action='/topic' method='post')
-				p
-					input(type='text' name='title' placeholder='title')
-				p
-					textarea(name='description')
-				p
-					input(type='submit')
+			h2= title
+			= desc
+		p
+			a(href='/topic_new') new

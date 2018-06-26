@@ -17,10 +17,100 @@ var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 */
 
-app.get('/topic/new', (req, res) => {
-	res.render('new');
+
+
+// 등록 폼
+app.get('/topic_new', (req, res) => {
+
+	fs.readdir('./data', 'utf8', (err, files) => {
+
+		if (err) {
+			// throw err;
+			console.log(err);
+			res.status(500).send('Internal Server Error'); //500 표시 - server error
+		}
+		res.render('new', { fileArr : files}) ;
+	});
+
 });
 
+
+//목록조회
+app.get(['/topic/', '/topic/:id'], (req, res) =>{
+	console.log('/topic', '/topic/:id');
+
+	fs.readdir('./data', 'utf8', (err, files) => {
+
+		if (err) {
+			// throw err;
+			console.log(err);
+			res.status(500).send('Internal Server Error'); //500 표시 - server error
+		}
+
+		let id = req.params.id;
+
+		if(Boolean(id))
+		{
+			fs.readFile(`data/${id}`, 'utf8', (err, data) => {
+
+				if (err){
+					// throw err;
+					console.log(err);
+					res.status(500).send('Internal Server Error'); //500 표시 - server error
+				}
+				res.render('view', { fileArr : files, title : id, desc : data }) ;
+			})
+		}
+		else
+		{
+			res.render('view', { fileArr : files, title : 'Welcome', desc : 'Hello, Javascript for server' }) ;
+		}
+	});
+
+});
+
+/*
+// 목록조회
+app.get('/topic', (req, res) => {
+
+	fs.readdir('./data', 'utf8', (err, data) => {
+		if (err){
+			// throw err;
+			console.log(err);
+			res.status(500).send('Internal Server Error'); //500 표시 - server error
+		}
+
+		res.render('view', { fileArr : data}) ;
+	});
+});
+
+//상세조회
+app.get('/topic/:id', (req, res) => {
+
+	let id = req.params.id;
+
+	fs.readdir('./data', 'utf8', (err, files) => {
+		if (err){
+			// throw err;
+			console.log(err);
+			res.status(500).send('Internal Server Error'); //500 표시 - server error
+		}
+
+		fs.readFile(`data/${id}`, 'utf8', (err, data) => {
+
+			if (err){
+				// throw err;
+				console.log(err);
+				res.status(500).send('Internal Server Error'); //500 표시 - server error
+			}
+
+			res.render('view', { fileArr : files, title : id, desc : data }) ;
+		})
+	});
+});
+*/
+
+// 등록
 app.post('/topic', (req, res) => {
 
 	let title = req.body.title;
@@ -33,15 +123,14 @@ app.post('/topic', (req, res) => {
 			res.status(500).send('Internal Server Error'); //500 표시 - server error
 		}
 
-		res.send(title);
-	})
 
+		res.redirect(`/topic/${title}`);
+	})
 });
 
 
 app.listen(3000, (req, res) =>{
 	console.log('Connect 3000 port');
-
 
 });
 

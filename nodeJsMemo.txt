@@ -16,6 +16,7 @@ pm2 : production process manager
  종료 - pm2 stop main.js(프로그램명)
  모니터링 - pm2 monit
  로그확인 - pm2 log
+ 실행목록 - pm2 list
 
 
 sanitize-html : xss filter 같음
