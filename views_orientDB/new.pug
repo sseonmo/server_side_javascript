@@ -1,0 +1,21 @@
+doctype html
+html
+	head
+		meta(charset="utf-8")
+		title
+
+	body
+		h1
+			a(href='/topic') Server Side JavaScript
+		ul
+			each val in fileArr
+				li
+					a(href=`/topic/${val}`)= val
+		artcle
+			form(action='/topic' method='post')
+				p
+					input(type='text' name='title' placeholder='title')
+				p
+					textarea(name='description')
+				p
+					input(type='submit')
