@@ -15,5 +15,14 @@ html
 		artcle
 			h2= title
 			= desc
-		p
-			a(href='/topic_new') new
+			if author
+				div= 'by ' + author
+		ul
+			li
+				a(href='/topic/add') add
+			if dRid
+				li
+					a(href=`/topic/${dRid}/edit`) edit
+			if dRid
+				li
+					a(href=`/topic/${dRid}/delete`) delete

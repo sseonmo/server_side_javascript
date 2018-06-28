@@ -28,18 +28,107 @@ let server = oriento({
 let db = server.use('02');
 
 
-
 // 등록 폼
-app.get('/topic_new', (req, res) => {
+app.get('/topic/add', (req, res) => {
 
-	fs.readdir('./data', 'utf8', (err, files) => {
+	let sql = 'select from topic';
 
-		if (err) {
-			// throw err;
-			console.log(err);
+	db.query(sql).then( (topics) => {
+
+		if(topics.length === 0)
+			res.status(500).send('Internal Server Error');
+		else
+			res.render('add', { topics : topics}) ;
+	});
+
+});
+
+
+// 등록
+app.post('/topic/add', (req, res) => {
+
+	let title = req.body.title;
+	let desc = req.body.description;
+	let author = req.body.author;
+
+	let sql = 'insert into topic(title, description, author	) values(:title, :description, :author)';
+
+	db.query(sql, { params : { title : title, description : desc, author : author} }).then( (result) => {
+
+		if(result.lenth === 0)
 			res.status(500).send('Internal Server Error'); //500 표시 - server error
-		}
-		res.render('new', { fileArr : files}) ;
+		else
+			 res.redirect(`/topic/${encodeURIComponent(result[0]['@rid'])}`)
+	});
+
+});
+
+//수정폼
+app.get('/topic/:id/edit', (req, res) => {
+
+	let id = decodeURIComponent(req.params.id);
+	let sql = 'select from topic';
+
+	db.query(sql).then( (topics) => {
+
+		sql += ' where @rid=:rid';
+
+		db.query(sql, {params:{ rid : id }}).then( (topicInfo) => {
+			res.render('edit', {
+				topics 		: topics,
+				topicInfo	: topicInfo[0]
+			}) ;
+		});
+	});
+});
+
+// 수정
+app.post('/topic/:id/edit', (req, res) => {
+
+	let id		= req.params.id;
+	let title 	= req.body.title;
+	let desc 	= req.body.description;
+	let author 	= req.body.author;
+
+	let sql = 'update topic set title=:title, description=:description, author=:author where @rid=:rid';
+		console.log('before : ',id);
+
+	db.query(sql, { params : { title : title, description : desc, author : author, rid : id } }).then( (result) => {
+		res.redirect(`/topic/${encodeURIComponent(id)}`)
+	});
+
+});
+
+
+//삭제폼
+app.get('/topic/:id/delete', (req, res) => {
+
+	let id = req.params.id;
+	let sql = 'select from topic';
+
+	db.query(sql).then( (topics) => {
+
+		sql += ' where @rid=:rid';
+
+		db.query(sql, {params:{ rid : id }}).then( (topicInfo) => {
+			res.render('delete', {
+				topics 		: topics,
+				topicInfo	: topicInfo[0]
+			}) ;
+		});
+	});
+
+});
+
+//삭제
+app.post('/topic/:id/delete', (req, res) => {
+
+	let id	= req.params.id;
+	let sql = 'delete from  topic where @rid=:rid';
+	console.log('before : ',id);
+
+	db.query(sql, { params : { rid : id } }).then( (topic) => {
+		res.redirect('/topic')
 	});
 
 });
@@ -58,110 +147,27 @@ app.get(['/topic/', '/topic/:id'], (req, res) =>{
 
 			sql += ' where @rid=:rid';
 
-			db.query(sql, {params:{ rid : decodeURIComponent(id)}}).then( (topicInfo) => {
-				res.render('view', { topics : topics, title : topicInfo[0].title, desc : topicInfo[0].description }) ;
+			db.query(sql, {params:{ rid : id}}).then( (topicInfo) => {
+				res.render('view', {
+					topics 	: topics,
+					title 	: topicInfo[0].title,
+					desc 	: topicInfo[0].description,
+					author 	: topicInfo[0].author,
+					dRid 	: encodeURIComponent(topicInfo[0]['@rid'])
+				}) ;
 			});
 		});
 	}
 	else
 	{
 		db.query(sql).then( (results) => {
-
 			res.render('view', { topics : results, title : 'Welcome', desc : 'Hello, Javascript for server' }) ;
 		});
 	}
-/*
-	fs.readdir('./data', 'utf8', (err, files) => {
 
-		if (err) {
-			// throw err;
-			console.log(err);
-			res.status(500).send('Internal Server Error'); //500 표시 - server error
-		}
-
-
-		if(Boolean(id))
-		{
-			fs.readFile(`data/${id}`, 'utf8', (err, data) => {
-
-				if (err){
-					// throw err;
-					console.log(err);
-					res.status(500).send('Internal Server Error'); //500 표시 - server error
-				}
-				res.render('view', { fileArr : files, title : id, desc : data }) ;
-			})
-		}
-		else
-		{
-			res.render('view', { fileArr : files, title : 'Welcome', desc : 'Hello, Javascript for server' }) ;
-		}
-	});*/
-
-});
-
-/*
-// 목록조회
-app.get('/topic', (req, res) => {
-
-	fs.readdir('./data', 'utf8', (err, data) => {
-		if (err){
-			// throw err;
-			console.log(err);
-			res.status(500).send('Internal Server Error'); //500 표시 - server error
-		}
-
-		res.render('view', { fileArr : data}) ;
-	});
-});
-
-//상세조회
-app.get('/topic/:id', (req, res) => {
-
-	let id = req.params.id;
-
-	fs.readdir('./data', 'utf8', (err, files) => {
-		if (err){
-			// throw err;
-			console.log(err);
-			res.status(500).send('Internal Server Error'); //500 표시 - server error
-		}
-
-		fs.readFile(`data/${id}`, 'utf8', (err, data) => {
-
-			if (err){
-				// throw err;
-				console.log(err);
-				res.status(500).send('Internal Server Error'); //500 표시 - server error
-			}
-
-			res.render('view', { fileArr : files, title : id, desc : data }) ;
-		})
-	});
-});
-*/
-
-// 등록
-app.post('/topic', (req, res) => {
-
-	let title = req.body.title;
-	let desc = req.body.description;
-
-	fs.writeFile(`./data/${title}`, desc, 'utf8', (err) => {
-
-		if(Boolean(err)){
-			console.log(err);
-			res.status(500).send('Internal Server Error'); //500 표시 - server error
-		}
-
-
-		res.redirect(`/topic/${title}`);
-	})
 });
 
 
 app.listen(3000, (req, res) =>{
 	console.log('Connect 3000 port');
-
 });
-
