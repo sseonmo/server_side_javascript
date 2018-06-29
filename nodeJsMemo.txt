@@ -41,6 +41,7 @@ underscore : array, object을 좀더 사용하기 쉽게 제공하는 js
 
 Express : server module
   설치 - npm install -save express
+  설치 - npm install express-session --save // session 기능
 
 pug : template engine
   설치 - npm install pug --save
