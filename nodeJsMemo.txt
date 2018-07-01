@@ -10,10 +10,14 @@ let queryData = url.parse(_url, true).query;	//querystring 추출
                : node -p process.versions.v8
 
 /***********************************************************************************************
+- powershell 관리자모드로 실행
+
 npm install -global --production windows-build-tools
     이 모듈은 Microsoft에서 무료로 제공하는 Visual C ++ Build Tools를 다운로드하고 설치합니다.
     이러한 도구는 널리 사용되는 기본 모듈을 컴파일 하는 데 필요합니다 .
     또한 Python 2.7을 설치하여 컴퓨터와 npm을 적절하게 구성합니다.
+
+npm install -g node-gyp
 ***********************************************************************************************/
 
 
@@ -41,7 +45,8 @@ underscore : array, object을 좀더 사용하기 쉽게 제공하는 js
 
 Express : server module
   설치 - npm install -save express
-  설치 - npm install express-session --save // session 기능
+  설치 - npm install express-session --save       // session 기능
+  설치 - npm install session-file-store --save    // session file store 기능
 
 pug : template engine
   설치 - npm install pug --save
@@ -51,6 +56,8 @@ bodyparser - post로 받는 parameter를 파싱해준다.
 
 orientDB - nosql DB
   설치 - npm install oriento --save
+  설치 - npm install orientjs --save
+  설치 - npm install connect-oriento --save
 
 cookie parser -
   설치 - npm install cookie-parser --save
