@@ -55,9 +55,19 @@ bodyparser - post로 받는 parameter를 파싱해준다.
   설치 - npm install  body-parser --save
 
 orientDB - nosql DB
-  설치 - npm install oriento --save
+  // 설치 - npm install oriento --save
   설치 - npm install orientjs --save
   설치 - npm install connect-oriento --save
 
 cookie parser -
   설치 - npm install cookie-parser --save
+
+
+md5 - 암호화 모듈(보안이 취약하여 더이상 사용하지않음)
+  설치 - npm install md5 --save
+
+sha256 - 암호화 모듈
+  npm install sha256 --save
+
+pbkdf2-password - 암호화모듈 (키 스트레칭(key stretching) 방식)
+  npm install pbkdf2-password --save

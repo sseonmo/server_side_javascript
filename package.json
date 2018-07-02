@@ -14,11 +14,13 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "md5": "^2.2.1",
     "npm": "^6.1.0",
     "orientjs": "^2.2.10",
-    "oriento": "^1.2.0",
+    "pbkdf2-password": "^1.2.1",
     "pug": "^2.0.3",
     "session-file-store": "^1.2.0",
+    "sha256": "^0.2.0",
     "underscore": "^1.9.1"
   }
 }
