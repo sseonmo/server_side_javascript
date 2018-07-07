@@ -2,6 +2,8 @@ let express = require('express');
 let session = require('express-session');	//기본적으로 메모리에 정을를 메모리에 저장한다.
 let FileStore = require('session-file-store')(session);
 let bodyParser = require('body-parser');
+let flash = require('connect-flash');
+let cookieParser = require('cookie-parser');
 
 /*암호화*/
 let md5 = require('md5');
@@ -28,6 +30,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());	// *주의* : line 18 - session을 정의한 후 선언해야함.
 
+/* 플래쉬 */
+app.use(cookieParser('Ksm73009662@'));
+app.use(flash());
+
 let user = [
 	{
 		name : 'seonmo',
@@ -45,6 +51,8 @@ let user = [
 
 //login 폼
 app.get('/auth/login', (req, res) => {
+	req.flash();
+
 	let output = `
 		<form action="/auth/login" method="post">
 		<p>
@@ -56,9 +64,10 @@ app.get('/auth/login', (req, res) => {
 		<p>
 			<input type="submit">
 		</p>
+	
 		</form>
 	`;
-	res.send(`<h1>Login</h1> ${output}`);
+	res.send(`<h1>Login</h1> ${output}` );
 });
 
 //passport 방식으로 로그인변경
@@ -73,12 +82,16 @@ passport.deserializeUser(function(id, done) {
 	for(let i = 0; i < user.length; i++) {
 		let userInfo = user[i];
 
-		if(user.name === id)	done(null, user);
+		if(userInfo.name === id){
+			done(null, userInfo);
+		}
 	}
 });
 
 passport.use(new LocalStrategy(
 	(username, password, done) => {
+
+		// if(err) done(err);
 
 		let uname 	= username;
 		let pwd 	= password;
@@ -92,14 +105,18 @@ passport.use(new LocalStrategy(
 				return hasher({password:pwd, salt:userInfo.salt }, (err, pass, salt, hash) => {
 					if(hash === userInfo.pwd)
 					{
-						console.log('LocalStrategy', user);
+						// console.log('LocalStrategy', user);
 						done(null, userInfo);
+					}
+					else
+					{
+						done(null, false, {message : "Incorrect password."});
 					}
 				});
 			}
 		}
 
-		done(null, false, { message: 'Who are You?' });
+		done(null, false, { message: 'Incorrect username' });
 	}
 ));
 
@@ -108,6 +125,7 @@ app.post('/auth/login',
 												successRedirect: '/welcome',
 												failureRedirect: '/auth/login',
 												failureFlash: true
+												// failureFlash: 'Invalid username or password.'
 											})
 		);
 
@@ -179,26 +197,37 @@ app.post('/auth/register', (req, res) => {
 	let displayName	= req.body.displayName;
 
 	return hasher({password : pwd}, (err, pass, salt, hash) => {
-		user.push({
+
+		let userInfo = {
 			name 		: uname,
 			pwd 		: hash,
 			salt 		: salt,
 			displayName : displayName
-		});
+		};
 
+		user.push(userInfo);
+
+		//passportjs 방식
+		req.login(userInfo, (err) => {
+			req.session.save( () => {
+				res.redirect('/welcome');
+			})
+		});
+		/*
 		req.session.displayName = displayName;
 		req.session.save( () => {
 			res.redirect('/welcome');
 		})
+		*/
 	});
 });
 
 app.get('/welcome', (req, res) => {
 
-	console.log(user);
-	if(req.session.displayName)
+	// if(req.session.displayName)
+	if(req.user && req.user.displayName)	//passport js
 		res.send(`
-			<h1>Hello, ${req.session.displayName}</h1>
+			<h1>Hello, ${req.user.displayName}</h1>
 			<a href="/auth/logout">logout</a>
 		`);
 	else
@@ -208,18 +237,20 @@ app.get('/welcome', (req, res) => {
 				<li><a href="/auth/login">Login</a></li>
 				<li><a href="/auth/register">Register</a></li>
 			</ul>
-			
 		`);
 });
 
 app.get('/auth/logout', (req, res) => {
+	req.logout(); //passportjs 방식
+	req.session.save( ()=> res.redirect('/welcome'));
+	/*	
 	if(	req.session.displayName){
 		delete req.session.displayName;
 		req.session.save( ()=> res.redirect('/welcome'));
 	}
 	else
 		res.redirect('/auth/login');
-
+	*/
 });
 
 app.get('/count', (req, res) => {
