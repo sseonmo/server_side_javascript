@@ -14,6 +14,8 @@ let hasher = bkfd2Password();
 /* 타사인증 */
 let passport = require('passport');
 let LocalStrategy = require('passport-local').Strategy;
+let FacebookStrategy = require('passport-facebook').Strategy;
+
 
 let app = express();
 
@@ -36,17 +38,19 @@ app.use(flash());
 
 let user = [
 	{
+		authId: 'local:seonmo',
 		name : 'seonmo',
 		pwd : 'VwJco5SpZBvhxiR15O7YJlnMAfolEd2Ean/g5Tx+ayTN/yR63DZCevrQSsVl3LD8j0J4E+2PQMrkTTDJzzpTF0uMOfmRf0KmjNXFp1yGtysSjOEFj6RTz7on7awuF/DSfiHvOcpvD0qUGd+Nu76Aq7zAXbEy/2QQ0d4VqXmJoXQ=',
 		salt :'SvspbIPOk2biR0//El1mXqHVjaR1+e7YRT8BYEjP1e9C9AJ9KYzsgCSx4KC3QGUPK6lwB7TAp32UYGKjf5id59gDsicG1GLtYQdRA====',
 		displayName : 'momochung'
-	},
-	{
-		name : 'k8805',
-		pwd : '4e7a5a4d30ad2f4e83c85699c3075b8154d662c75b23e6a6950dd717ef8a08f5',
-		salt : 'asdfcx213213ds',
-		displayName : 'K5'
 	}
+	// {
+	// 	authId: 2,
+	// 	name : 'k8805',
+	// 	pwd : '4e7a5a4d30ad2f4e83c85699c3075b8154d662c75b23e6a6950dd717ef8a08f5',
+	// 	salt : 'asdfcx213213ds',
+	// 	displayName : 'K5'
+	// }
 ];
 
 //login 폼
@@ -64,16 +68,63 @@ app.get('/auth/login', (req, res) => {
 		<p>
 			<input type="submit">
 		</p>
-	
 		</form>
+		<a href="/auth/facebook">facebook</a>
 	`;
 	res.send(`<h1>Login</h1> ${output}` );
 });
 
+// 타사인증 - facebook
+passport.use(new FacebookStrategy({
+		clientID: '196298951224770',
+		clientSecret: '30b2c4a16f668dc1b78be15c1ff17b66',
+		callbackURL: "/auth/facebook/callback",
+		profileFields:['id','email','gender', 'link', 'locale','name','timezone','updated_time','verified', 'displayName'] //User Profile - http://www.passportjs.org/docs/profile/ - 타사사이트별로 제공해주는 scope를 찾아봐야함
+	},
+	function(accessToken, refreshToken, profile, done) {
+		// console.log("accessToken", accessToken);
+		// console.log("refreshToken", refreshToken);
+		console.log("profile", profile);
+
+		let authId = `facebook:${profile.id}`;
+
+		for(let i=0; i<user.length; i++){
+			let userInfo = user[i];
+
+			if(userInfo.authId === 'authId')
+				return done(null, userInfo);
+		}
+
+		let newUser = {
+			'authId': authId,
+			'displayName': profile.displayName,
+			'email': profile.emails[0].value
+		};
+
+		user.push(newUser);
+
+		done(null, newUser );
+
+		// User.findOrCreate(..., function(err, user) {
+		// 	if (err) { return done(err); }
+		// 	done(null, user);
+		// });
+	}
+));
+
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
+
+app.get('/auth/facebook/callback',
+	passport.authenticate('facebook', {
+		successRedirect: '/welcome',
+		failureRedirect: '/auth/login'
+	}));
+
+
 //passport 방식으로 로그인변경
 passport.serializeUser(function(user, done) {
 	console.log('serializeUser', user);
-	done(null, user.name);
+	done(null, user.authId);
 });
 
 passport.deserializeUser(function(id, done) {
@@ -82,10 +133,11 @@ passport.deserializeUser(function(id, done) {
 	for(let i = 0; i < user.length; i++) {
 		let userInfo = user[i];
 
-		if(userInfo.name === id){
-			done(null, userInfo);
+		if(userInfo.authId === id){
+			return done(null, userInfo);
 		}
 	}
+	done('There is no User.')
 });
 
 passport.use(new LocalStrategy(
@@ -199,6 +251,7 @@ app.post('/auth/register', (req, res) => {
 	return hasher({password : pwd}, (err, pass, salt, hash) => {
 
 		let userInfo = {
+			authId 		: `local:${uname}`,
 			name 		: uname,
 			pwd 		: hash,
 			salt 		: salt,

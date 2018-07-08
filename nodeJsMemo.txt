@@ -71,6 +71,7 @@ sha256 : 암호화 모듈
 
 pbkdf2-password : 암호화모듈 (키 스트레칭(key stretching) 방식)
   npm install pbkdf2-password --save
+  npm install passport-facebook --save : facebook 연동
 
 
 passportjs : 타사인증모둘(타사인증(twiter, google 등..)에 대한 모듈을 각각 설치가 필요하다. )
