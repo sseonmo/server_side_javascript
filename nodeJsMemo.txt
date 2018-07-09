@@ -55,9 +55,9 @@ bodyparser : post로 받는 parameter를 파싱해준다.
   설치 - npm install  body-parser --save
 
 orientDB : nosql DB
-  // 설치 - npm install oriento --save
+  설치 - npm install oriento --save  :  node.js.에 대한 공식 orientdb 드라이버
   설치 - npm install orientjs --save
-  설치 - npm install connect-oriento --save
+  설치 - npm install connect-oriento --save : express session 사용에 필요
 
 cookie parser :
   설치 - npm install cookie-parser --save
