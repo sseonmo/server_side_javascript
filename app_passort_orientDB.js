@@ -76,61 +76,46 @@ passport.use(new FacebookStrategy({
 		clientID: '196298951224770',
 		clientSecret: '30b2c4a16f668dc1b78be15c1ff17b66',
 		callbackURL: "/auth/facebook/callback",
-		profileFields: ['id', 'email', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified', 'displayName'] //User Profile - http://www.passportjs.org/docs/profile/ - 타사사이트별로 제공해주는 scope를 찾아봐야함
+		profileFields: ['id', 'email', 'gender', 'link', 'locale', 'name'
+						, 'timezone', 'updated_time', 'verified', 'displayName'] //User Profile - http://www.passportjs.org/docs/profile/ - 타사사이트별로 제공해주는 scope를 찾아봐야함
 	},
 	function(accessToken, refreshToken, profile, done) {
 		// console.log("accessToken", accessToken);
 		// console.log("refreshToken", refreshToken);
 		console.log("profile", profile);
 
-		let sql = 'insert into user (authId, displayName, email) ' +
-			'values(:authId, :displayName, :email)';
+		let userInfo = {
+			authId: `facebook:${profile.id}`,
+			username: profile.displayName,
+			displayName: profile.displayName,
+			email: profile.emails[0].value
+		};
 
-		db.query(sql, {
-			params: {
-				authId: `facebook:${profile.id}`,
-				displayName: profile.displayName,
-				email : profile.emails[0].value
-			}
-		}).then( (results) =>{
+		// user select
+		let sqlSelect = 'select * from user authId=:authId';
+		db.query(sqlSelect, {params: {authId: userInfo.authId}}).then((results) => {
 
-			//passportjs 방식
-			req.login(results[0], (err) => {
-				req.session.save( () => {
-					res.redirect('/welcome');
-				})
-			});
+			if(results.length === 1)	return done(null, results[0])
+		}).then((err) => {
+			console.log(err);
+			return done(null, false);
+		});
+
+		// user insert
+		let sqlInsert = 'insert into user (authId, displayName, username,  email) ' +
+			'values(:authId, :displayName, :username, :email)';
+
+		db.query(sqlInsert, {
+			params: userInfo
+		}).then((results) => {
+
+			if(results.length === 0) return done(null, false);
+			else					 return done(null, results[0])
 
 		}, (err) => {
 			console.log(err);
-			res.status(500);	//내부에러
+			return done(null, false);
 		});
-
-		/*
-
-		let authId = `facebook:${profile.id}`;
-
-		for(let i=0; i<user.length; i++){
-			let userInfo = user[i];
-
-			if(userInfo.authId === 'authId')
-				return done(null, userInfo);
-		}
-
-		let newUser = {
-			'authId': authId,
-			'displayName': profile.displayName,
-			'email': profile.emails[0].value
-		};
-
-		user.push(newUser);
-
-		done(null, newUser );
-*/
-		// User.findOrCreate(..., function(err, user) {
-		// 	if (err) { return done(err); }
-		// 	done(null, user);
-		// });
 	}
 ));
 
