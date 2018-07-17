@@ -6,7 +6,7 @@ let oriento 	= require('orientjs');
 let app = express();
 app.locals.pretty = true;			// 이쁘게..ㅋㅋㅋ
 
-app.set('views', './views_orientDB');	// 템플릿 디렉토리 위치
+app.set('views', './views/orientDB/');	// 템플릿 디렉토리 위치
 app.set('view engine', 'pug');			// pug 를 사용하겠다.
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -38,7 +38,7 @@ app.get('/topic/add', (req, res) => {
 		if(topics.length === 0)
 			res.status(500).send('Internal Server Error');
 		else
-			res.render('add', { topics : topics}) ;
+			res.render('topic/add', { topics : topics}) ;
 	});
 
 });
@@ -74,7 +74,7 @@ app.get('/topic/:id/edit', (req, res) => {
 		sql += ' where @rid=:rid';
 
 		db.query(sql, {params:{ rid : id }}).then( (topicInfo) => {
-			res.render('edit', {
+			res.render('topic/edit', {
 				topics 		: topics,
 				topicInfo	: topicInfo[0]
 			}) ;
@@ -111,7 +111,7 @@ app.get('/topic/:id/delete', (req, res) => {
 		sql += ' where @rid=:rid';
 
 		db.query(sql, {params:{ rid : id }}).then( (topicInfo) => {
-			res.render('delete', {
+			res.render('topic/delete', {
 				topics 		: topics,
 				topicInfo	: topicInfo[0]
 			}) ;
@@ -137,6 +137,7 @@ app.post('/topic/:id/delete', (req, res) => {
 //목록조회
 app.get(['/topic/', '/topic/:id'], (req, res) =>{
 
+	console.log('/topic/', '/topic/:id');
 	let id = req.params.id;
 
 	let sql = 'select from topic';
@@ -148,7 +149,7 @@ app.get(['/topic/', '/topic/:id'], (req, res) =>{
 			sql += ' where @rid=:rid';
 
 			db.query(sql, {params:{ rid : id}}).then( (topicInfo) => {
-				res.render('view', {
+				res.render('topic/view', {
 					topics 	: topics,
 					title 	: topicInfo[0].title,
 					desc 	: topicInfo[0].description,
@@ -161,7 +162,7 @@ app.get(['/topic/', '/topic/:id'], (req, res) =>{
 	else
 	{
 		db.query(sql).then( (results) => {
-			res.render('view', { topics : results, title : 'Welcome', desc : 'Hello, Javascript for server' }) ;
+			res.render('topic/view', { topics : results, title : 'Welcome', desc : 'Hello, Javascript for server' }) ;
 		});
 	}
 

@@ -1,0 +1,12 @@
+extends ../layout
+block content
+	artcle
+		form(action=`/topic/${encodeURIComponent(topicInfo['@rid'])}/edit` method='post')
+			p
+				input(type='text' name='title' placeholder='title' value=topicInfo.title)
+			p
+				textarea(name='description' placeholder='description')= topicInfo.description
+			p
+				input(type='text' name='author' placeholder='author' value=topicInfo.author)
+			p
+				input(type='submit')

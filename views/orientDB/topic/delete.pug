@@ -1,0 +1,8 @@
+extends ../layout
+block content
+	artcle
+		h1= `Delete? ${topicInfo.title}`
+		form(action=`/topic/${encodeURIComponent(topicInfo['@rid'])}/delete` method='post')
+			p
+				input(type='submit' value='Yes')
+			a(href=`/topic/${encodeURIComponent(topicInfo['@rid'])}`) No
