@@ -11,13 +11,16 @@ module.exports = function(passport){
 
 	// login 폼
 	route.get('/login', (req, res) => {
-		res.render('auth/login')
+		let sql = 'select from topic';
+		db.query(sql).then( (topics) => {
+			res.render('auth/login', { topics : topics, user : req.user })
+		});
 	});
 
 	// login 정책 - passport.js
 	route.post('/login',
 		passport.authenticate('local', {
-			successRedirect: '/welcome',
+			successRedirect: '/topic',
 			failureRedirect: '/login',
 			failureFlash: false
 			// failureFlash: 'Invalid username or password.'
@@ -30,13 +33,16 @@ module.exports = function(passport){
 	// login facebook - callback - 페이스북 인증시 페이스북에서 호출되는 url
 	route.get('/facebook/callback',
 		passport.authenticate('facebook', {
-			successRedirect: '/welcome',
+			successRedirect: '/topic',
 			failureRedirect: '/login'
 		}));
 
 	// register 폼
 	route.get('/register', (req, res) => {
-		res.render('auth/register');
+		let sql = 'select from topic';
+		db.query(sql).then( (topics) => {
+			res.render('auth/register', { topics : topics })
+		});
 	});
 
 	// register process
@@ -64,7 +70,7 @@ module.exports = function(passport){
 				//passportjs 방식
 				req.login(results[0], (err) => {
 					req.session.save( () => {
-						res.redirect('/welcome');
+						res.redirect('/topic');
 					})
 				});
 
@@ -79,7 +85,7 @@ module.exports = function(passport){
 	// logout
 	route.get('/logout', (req, res) => {
 		req.logout(); //passportjs 방식
-		req.session.save( ()=> res.redirect('/welcome'));
+		req.session.save( ()=> res.redirect('/topic'));
 	});
 
 	return route;

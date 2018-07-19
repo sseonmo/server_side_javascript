@@ -1,16 +1,17 @@
 extends ../layout
 block content
 	artcle
-		h2= title
-		= desc
-		if author
-			div= 'by ' + author
+		if topic
+			h2= topic.title
+			= topic.description
+			if topic.author
+				div= 'by ' + topic.author
 	ul
 		li
 			a(href='/topic/add') add
-		if dRid
+		if topic
+			- rid = encodeURIComponent(topic['@rid'])
 			li
-				a(href=`/topic/${dRid}/edit`) edit
-		if dRid
+				a(href=`/topic/${rid}/edit`) edit
 			li
-				a(href=`/topic/${dRid}/delete`) delete
+				a(href=`/topic/${rid}/delete`) delete

@@ -89,7 +89,7 @@ module.exports = function(app){
 			let sqlSelect = 'select * from user where authId=:authId';
 			db.query(sqlSelect, {params: {authId: userInfo.authId}}).then((results) => {
 
-				if(results.length === 1)	return done(null, results[0])
+				if(results.length !== 0)	return done(null, results[0]);
 				else{
 					// user insert
 					let sqlInsert = 'insert into user (authId, displayName, username,  email) ' +

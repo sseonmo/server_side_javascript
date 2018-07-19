@@ -1,8 +1,8 @@
 module.exports = function(){
 
 	let express 		= require('express');
-	let session 		= require('express-session');	//기본적으로 메모리에 정을를 메모리에 저장한다.
-	let orientoStore 	= require('connect-oriento')(session);
+	let session 		= require('express-session');				// 기본적으로 메모리에 정보를 메모리에 저장한다.
+	let orientoStore 	= require('connect-oriento')(session);		// 세션정보를 orientDB 에 저장하도록 변경한다.
 	let bodyParser 		= require('body-parser');
 
 	/* app */
